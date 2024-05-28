@@ -14,7 +14,7 @@
 #include <iterator>
 #include <iomanip>
 #include <fstream>
-#include "/usr/inculde/curl/curl.h"
+#include "/usr/include/curl/curl.h"
 
 using namespace std;
 
