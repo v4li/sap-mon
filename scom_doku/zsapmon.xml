@@ -1,0 +1,680 @@
+﻿<?xml version="1.0" encoding="utf-8"?><ManagementPack ContentReadable="true" SchemaVersion="2.0" OriginalSchemaVersion="1.1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <Manifest>
+    <Identity>
+      <ID>zsapmon</ID>
+      <Version>1.0.0.1</Version>
+    </Identity>
+    <Name>z_sapmon</Name>
+    <References>
+      <Reference Alias="Unix">
+        <ID>Microsoft.Unix.ShellCommand.Library</ID>
+        <Version>10.22.1072.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SCDW">
+        <ID>Microsoft.SystemCenter.DataWarehouse.Library</ID>
+        <Version>10.22.10118.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SystemPerf">
+        <ID>System.Performance.Library</ID>
+        <Version>7.0.8447.6</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SystemLibrary7585011">
+        <ID>System.Library</ID>
+        <Version>7.5.8501.1</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SystemCenter">
+        <ID>Microsoft.SystemCenter.Library</ID>
+        <Version>10.22.10118.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="Linux">
+        <ID>Microsoft.Linux.Library</ID>
+        <Version>10.22.1072.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="MicrosoftUnixLibrary102210720">
+        <ID>Microsoft.Unix.Library</ID>
+        <Version>10.22.1072.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="Health">
+        <ID>System.Health.Library</ID>
+        <Version>7.0.8447.6</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+    </References>
+  </Manifest>
+  <Monitoring>
+    <Rules>
+      <Rule ID="MomUIGeneratedRule73b9eb096f8b44beb3764d70b597de4c" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ConfirmDelivery="false" Remotable="true" Priority="Normal" DiscardLevel="100">
+        <Category>PerformanceCollection</Category>
+        <DataSources>
+          <DataSource ID="InvokeDS" TypeID="Unix!Microsoft.Unix.Invoke.Script.DataSource">
+            <Interval>60</Interval>
+            <SyncTime />
+            <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+            <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+            <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+            <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1jaGVjayAtdXNlcm5hbWU9UkZDX1RFU1QgLXBhc3N3b3JkPVRlc3QxMjM0NTY3IC1ob3N0bmFtZT1zYXBsbnggLXNpZD1BTDEgLXN5c251bT0wMSAtY2xpZW50PTEwMCAtbW9uaXRvcj0nQUwxXHNhcGxueF9BTDFfMDFcUjNTZXJ2aWNlc1xEaWFsb2dcUmVzcG9uc2VUaW1lJyk=</Script>
+            <ScriptArgs />
+            <TimeOut>120</TimeOut>
+            <TimeOutInMS>120000</TimeOutInMS>
+            <FilterExpression>
+              <And>
+                <Expression>
+                  <RegExExpression>
+                    <ValueExpression>
+                      <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+                    </ValueExpression>
+                    <Operator>MatchesRegularExpression</Operator>
+                    <Pattern>^[-+]?\d*[0-9]*(\.[0-9]+)?[Ee]?[-+]?[0-9]*$</Pattern>
+                  </RegExExpression>
+                </Expression>
+                <Expression>
+                  <SimpleExpression>
+                    <ValueExpression>
+                      <XPathQuery Type="Integer">//*[local-name()="ReturnCode"]
+                            </XPathQuery>
+                    </ValueExpression>
+                    <Operator>Equal</Operator>
+                    <ValueExpression>
+                      <Value Type="Integer">0
+                            </Value>
+                    </ValueExpression>
+                  </SimpleExpression>
+                </Expression>
+              </And>
+            </FilterExpression>
+          </DataSource>
+        </DataSources>
+        <ConditionDetection ID="PerfMapper" TypeID="SystemPerf!System.Performance.DataGenericMapper">
+          <ObjectName>diag response time</ObjectName>
+          <CounterName>ms</CounterName>
+          <InstanceName>diag response</InstanceName>
+          <Value>$Data///*[local-name()='StdOut']$</Value>
+        </ConditionDetection>
+        <WriteActions>
+          <WriteAction ID="PerfWriteToDB" TypeID="SystemCenter!Microsoft.SystemCenter.CollectPerformanceData" />
+          <WriteAction ID="PerfWriteToDW" TypeID="SCDW!Microsoft.SystemCenter.DataWarehouse.PublishPerformanceData" />
+        </WriteActions>
+      </Rule>
+    </Rules>
+    <Monitors>
+      <UnitMonitor ID="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateId5b5b1181599d44d0a761ff7a329c0be8" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateId8dd4bed04d4f4d38bf50bb32549d8267" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1jaGVjayAtdXNlcm5hbWU9UkZDX1RFU1QgLXBhc3N3b3JkPVRlc3QxMjM0NTY3IC1ob3N0bmFtZT1zYXBsbnggLXNpZD1BTDEgLXN5c251bT0wMSAtY2xpZW50PTEwMCAtbW9uaXRvcj0nQUwxXHNhcGxueF9BTDFfMDFcRGF0YWJhc2VDbGllbnRcREJDb25uZWN0aW9uXERCU2VydmVyJyk=</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>db2-erp Details: connected to database server db2-erp, database AL1 (DB6, DB6_81)</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern>db2-erp Details: connected to database server db2-erp, database AL1 (DB6, DB6_81)</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateId4c7b85dc207049b0b569122777840428" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateIda7c78891cb694bb592fbf767f20a1313" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1jaGVjayAtdXNlcm5hbWU9Qml0LURldmlsIC1wYXNzd29yZD1UZXN0MTIzNDUgLWhvc3RuYW1lPXNhcC1zb2xtYW4gLXNpZD1BTDIgLXN5c251bT0wMCAtY2xpZW50PTAwMCAtbW9uaXRvcj0nQUwyXE9yYWNsZVxTcGFjZSBtYW5hZ2VtZW50XFRhYmxlc3BhY2VzXFBTQVBTUjNcVXNlZCBzcGFjZScp</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>LessEqual</Operator>
+              <ValueExpression>
+                <Value Type="String">49</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>GreaterEqual</Operator>
+              <ValueExpression>
+                <Value Type="String">50</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateId8df880d13cfd45ce87095dacffb96601" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateId65be7f4744cc4c12bc0fb1c96f2a2eab" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1jaGVjayAtdXNlcm5hbWU9UkZDX1RFU1QgLXBhc3N3b3JkPVRlc3QxMjM0NTY3IC1ob3N0bmFtZT1zYXBsbnggLXNpZD1BTDEgLXN5c251bT0wMSAtY2xpZW50PTEwMCAtbW9uaXRvcj0nQUwxXERCMiBVbml2ZXJzYWwgRGF0YWJhc2UgZm9yIE5UL1VOSVhcU3BhY2UgbWFuYWdlbWVudFxkYXRhYmFzZSByZWxhdGVkIGZpbGUgc3lzdGVtc1xkYXRhYmFzZSBkaXJlY3RvcnknKQ==</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>LessEqual</Operator>
+              <ValueExpression>
+                <Value Type="String">33</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>GreaterEqual</Operator>
+              <ValueExpression>
+                <Value Type="String">39</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateId1c65916bea3741aa816b81b2ace54faa" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateIde887b4a447a342c896326c11b205b0fb" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1jaGVjayAtdXNlcm5hbWU9UkZDX1RFU1QgLXBhc3N3b3JkPVRlc3QxMjM0NTY3IC1ob3N0bmFtZT1zYXBsbnggLXNpZD1BTDEgLXN5c251bT0wMSAtY2xpZW50PTEwMCAtbW9uaXRvcj0nQUwxXHNhcGxueF9BTDFfMDFcV2ViIER5bnBybyBBQkFQXERhdGEnKQ==</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>____no_Web_Dynpro_Appl._called SessionCount=000 Timeouts=00 Roundtrips=000 CpuTime=00000s SessionTime=00000s</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern>____no_Web_Dynpro_Appl._called SessionCount=000 Timeouts=00 Roundtrips=000 CpuTime=00000s SessionTime=00000s</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitor766315950b3c4df98024071df3893eb8" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitor766315950b3c4df98024071df3893eb8_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateIdd40ce004434e4253b4039bf872bf43a5" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateId54e226cc4d3944ceafb052fe94a260e7" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1hYm9ydGVkLWpvYiAtdXNlcm5hbWU9UkZDX1RFU1QgLXBhc3N3b3JkPVRlc3QxMjM0NTY3IC1ob3N0bmFtZT1zYXBsbnggLXNpZD1BTDEgLXN5c251bT0wMSAtY2xpZW50PTEwMCk=</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern>CRITICAL</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>CRITICAL</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateIdb9db858c7359427882382579908c81f7" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateIdb132d8f285a1473ab2ebe39bb4a3c34a" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1hYmFwLWR1bXAgLXVzZXJuYW1lPVJGQ19URVNUIC1wYXNzd29yZD1UZXN0MTIzNDU2NyAtaG9zdG5hbWU9c2FwbG54IC1zaWQ9QUwxIC1zeXNudW09MDEgLWNsaWVudD0xMDApDQoNCg==</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern>CRITICAL</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>CRITICAL</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateIddb3bfd6ff4ff45f7b99d854b5dd8de34" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateId51a74d839a6f4141ad3574af15712f4d" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1zc2xjaGVjayAtdXNlcm5hbWU9UkZDX1RFU1QgLXBhc3N3b3JkPVRlc3QxMjM0NTY3IC1ob3N0bmFtZT1zYXBsbnggLXNpZD1BTDEgLXN5c251bT0wMSAtY2xpZW50PTEwMCAtc3ViamVjdG5hbWU9J0M9Q0EsIFNUPUNBIHN0YXRlLCBMPWNhIGNpdHksIE89Y2EgY29tcGFueSwgT1U9Y2Egb3UsIENOPWNhIGNuJyAtd2Fybj0zMCAtY3JpdGljYWw9MTUgKQ==</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern>CRITICAL</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>CRITICAL</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateIdb8663bd524b0436aa706be219d6a69aa" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateId6c37a831df1e40789ef1a949d2c312a7" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>60</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1yZmMgLXVzZXJuYW1lPVJGQ19URVNUIC1wYXNzd29yZD1UZXN0MTIzNDU2NyAtaG9zdG5hbWU9c2FwbG54IC1zaWQ9QUwxIC1zeXNudW09MDEgLWNsaWVudD0xMDAgLXJmY2Rlc3RpbmF0aW9uPSdBTDY2Nicp</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>OK - RFC destination AL1</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern>OK - RFC destination AL1</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d" Accessibility="Public" Enabled="true" Target="Linux!Microsoft.Linux.Computer" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Unix!Microsoft.Unix.Script.TwoState.MonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d_AlertMessageResourceID">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UIGeneratedOpStateId51f242b6421a4e31aa2ce7dd1341a4bc" MonitorTypeStateID="StatusOK" HealthState="Success" />
+          <OperationalState ID="UIGeneratedOpStateId5d2ea3b178dc46ad923da867b52806bf" MonitorTypeStateID="StatusError" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <Interval>300</Interval>
+          <SyncTime />
+          <TargetSystem>$Target/Property[Type="MicrosoftUnixLibrary102210720!Microsoft.Unix.Computer"]/NetworkName$</TargetSystem>
+          <UserName>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/UserName$</UserName>
+          <Password>$RunAs[Name="MicrosoftUnixLibrary102210720!Microsoft.Unix.ActionAccount"]/Password$</Password>
+          <Script>IyEvYmluL2Jhc2gNCmV4cG9ydCBQQVRIPSRQQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZXhwb3J0IExEX0xJQlJBUllfUEFUSD0kTERfTElCUkFSWV9QQVRIOicvcm9vdC90ZW1wL3NhcF9tb24vbG9rYWxfZ2l0X3JlcG8vbndyZmNzZGsvbGliJw0KZWNobyAkKC9yb290L3RlbXAvc2FwX21vbi9sb2thbF9naXRfcmVwby9zYXBfbW9uIC1qYXZhIC11c2VybmFtZT1hbDNhZG0gLXBhc3N3b3JkPVRlc3QxMjM0NSAtaG9zdG5hbWU9c2FwLXNvbG1hbiAtc3lzbnVtPTAyIC1wcm90bz1odHRwIC1zYXBjb250cm9sPUoyRUVHZXRQcm9jZXNzTGlzdCAtbW9uaXRvcm5hbWU9J3NlcnZlcjAnKQ==</Script>
+          <ScriptArgs />
+          <TimeOut>120</TimeOut>
+          <TimeOutInMS>120000</TimeOutInMS>
+          <HealthyExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>ContainsSubstring</Operator>
+              <Pattern>| GREEN | Running</Pattern>
+            </RegExExpression>
+          </HealthyExpression>
+          <ErrorExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">//*[local-name()="StdOut"]
+                            </XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotContainSubstring</Operator>
+              <Pattern> | GREEN  | Running</Pattern>
+            </RegExExpression>
+          </ErrorExpression>
+        </Configuration>
+      </UnitMonitor>
+    </Monitors>
+  </Monitoring>
+  <Presentation>
+    <Folders>
+      <Folder ID="Folder_56f095d3d8514526971a363be9c5b0f8" Accessibility="Public" ParentFolder="SystemCenter!Microsoft.SystemCenter.Monitoring.ViewFolder.Root" />
+    </Folders>
+    <StringResources>
+      <StringResource ID="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitor766315950b3c4df98024071df3893eb8_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5_AlertMessageResourceID" />
+      <StringResource ID="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f_AlertMessageResourceID" />
+      <StringResource ID="MomUIGeneratedRule73b9eb096f8b44beb3764d70b597de4c.AlertMessage" />
+      <StringResource ID="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d_AlertMessageResourceID" />
+    </StringResources>
+  </Presentation>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="false">
+      <DisplayStrings>
+        <DisplayString ElementID="zsapmon">
+          <Name>z_sapmon</Name>
+        </DisplayString>
+        <DisplayString ElementID="Folder_56f095d3d8514526971a363be9c5b0f8">
+          <Name>z_sapmon</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549">
+          <Name>z_AL1_sapmon_DBConnection_DBServer</Name>
+          <Description>ccms AL1\saplnx_AL1_01\DatabaseClient\DBConnection\DBServer</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549" SubElementID="UIGeneratedOpStateId5b5b1181599d44d0a761ff7a329c0be8">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549" SubElementID="UIGeneratedOpStateId8dd4bed04d4f4d38bf50bb32549d8267">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor74962a8ff32c44548bcc3d62c4642549_AlertMessageResourceID">
+          <Name>z_DBConnection_DBServer_AL1</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21">
+          <Name>z_AL2_sapmon_Tablespaces_PSAPSR3_Used_space</Name>
+          <Description>z_AL2_sapmon_Tablespaces_PSAPSR3_Used_space</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21" SubElementID="UIGeneratedOpStateId4c7b85dc207049b0b569122777840428">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21" SubElementID="UIGeneratedOpStateIda7c78891cb694bb592fbf767f20a1313">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor6b100aa16cd04e1fb955b286ab4e0a21_AlertMessageResourceID">
+          <Name>z_AL2_ccmd_Tablespaces_PSAPSR3_Used space</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20">
+          <Name>z_AL1_sapmon_filesystems_database_directory</Name>
+          <Description>AL1\DB2 Universal Database for NT/UNIX\Space management\database related file systems\database directory</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20" SubElementID="UIGeneratedOpStateId8df880d13cfd45ce87095dacffb96601">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20" SubElementID="UIGeneratedOpStateId65be7f4744cc4c12bc0fb1c96f2a2eab">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor64dd452412464c74868ef1b697af9e20_AlertMessageResourceID">
+          <Name>z_AL1_ccms_filesystems_database_directory</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e">
+          <Name>z_AL1_sapmon_Web_Dynpro_ABAP_Data</Name>
+          <Description>AL1\saplnx_AL1_01\Web Dynpro ABAP\Data</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e" SubElementID="UIGeneratedOpStateId1c65916bea3741aa816b81b2ace54faa">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e" SubElementID="UIGeneratedOpStateIde887b4a447a342c896326c11b205b0fb">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorbdfee2cdfae948eca1bb9c86e790ac5e_AlertMessageResourceID">
+          <Name>z_AL1_ccms_Web_Dynpro_ABAP_Data</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor766315950b3c4df98024071df3893eb8">
+          <Name>z_AL1_sapmon_aborted_job</Name>
+          <Description>sapmon_aborted_job</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor766315950b3c4df98024071df3893eb8" SubElementID="UIGeneratedOpStateIdd40ce004434e4253b4039bf872bf43a5">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor766315950b3c4df98024071df3893eb8" SubElementID="UIGeneratedOpStateId54e226cc4d3944ceafb052fe94a260e7">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor766315950b3c4df98024071df3893eb8_AlertMessageResourceID">
+          <Name>z_AL1_sapmon_aborted_job</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513">
+          <Name>z_AL1_sapmon_abap_dump</Name>
+          <Description>z_AL1_sapmon_abap_dump</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513" SubElementID="UIGeneratedOpStateIdb9db858c7359427882382579908c81f7">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513" SubElementID="UIGeneratedOpStateIdb132d8f285a1473ab2ebe39bb4a3c34a">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitorcf2bcd2d81524936b7cc60ce25ed4513_AlertMessageResourceID">
+          <Name>z_AL1_sapmon_abap_dump</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5">
+          <Name>z_AL1_sapmon_sslcheck</Name>
+          <Description>z_AL1_sapmon_sslcheck
+
+ -warn=30 -critical=15</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5" SubElementID="UIGeneratedOpStateIddb3bfd6ff4ff45f7b99d854b5dd8de34">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5" SubElementID="UIGeneratedOpStateId51a74d839a6f4141ad3574af15712f4d">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitord5c15ac6dcd44414836bdf6ce91fe6d5_AlertMessageResourceID">
+          <Name>z_AL1_sapmon_sslcheck</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f">
+          <Name>z_AL1_sapmon_rfcdestination</Name>
+          <Description>z_AL1_sapmon_rfcdestination AL666 (does not exists)</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f" SubElementID="UIGeneratedOpStateIdb8663bd524b0436aa706be219d6a69aa">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f" SubElementID="UIGeneratedOpStateId6c37a831df1e40789ef1a949d2c312a7">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitore6977f942e7a4347a40af8501b1f903f_AlertMessageResourceID">
+          <Name>z_AL1_sapmon_rfcdestination</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+        <DisplayString ElementID="MomUIGeneratedRule73b9eb096f8b44beb3764d70b597de4c">
+          <Name>z_AL1_sapmon_Dialog_ResponseTime</Name>
+          <Description>ccms AL1\saplnx_AL1_01\R3Services\Dialog\ResponseTime</Description>
+        </DisplayString>
+        <DisplayString ElementID="MomUIGeneratedRule73b9eb096f8b44beb3764d70b597de4c.AlertMessage">
+          <Name />
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d">
+          <Name>z_AL3_sapmon_J2EEGetProcessList</Name>
+          <Description>sap_mon -java -username=al3adm -hostname=sap-solman -sysnum=02 -proto=http -sapcontrol=J2EEGetProcessList -monitorname='server0'
+ | GREEN  | Running
+</Description>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d" SubElementID="UIGeneratedOpStateId51f242b6421a4e31aa2ce7dd1341a4bc">
+          <Name>StatusOK</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d" SubElementID="UIGeneratedOpStateId5d2ea3b178dc46ad923da867b52806bf">
+          <Name>StatusError</Name>
+        </DisplayString>
+        <DisplayString ElementID="UIGeneratedMonitor1a4a57206dbc4b2a9fae40ae2b70eb9d_AlertMessageResourceID">
+          <Name>z_AL3_sapmon_J2EEGetProcessList server0</Name>
+          <Description>Please see the alert context for details.</Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPack>
