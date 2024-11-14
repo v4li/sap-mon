@@ -8,6 +8,7 @@
 #include <time.h>
 #include <errno.h>
 #include <signal.h>
+#include <sap_utils.h>
 #include "nwrfcsdk/include/sapnwrfc.h"
 #include "nwrfcsdk/include/sapucrfc.h"
 
@@ -98,24 +99,83 @@ int main(int argc, char *argv[])
 
 
 
-        signal(SIGSEGV, signalHandler);
-        signal(SIGABRT, signalHandler);
-        signal(SIGFPE, signalHandler);
-        signal(SIGILL, signalHandler);
-        signal(SIGTERM, signalHandler);
-        signal(SIGINT, signalHandler);
+	signal(SIGSEGV, signalHandler);
+    signal(SIGABRT, signalHandler);
+    signal(SIGFPE, signalHandler);
+    signal(SIGILL, signalHandler);
+    signal(SIGTERM, signalHandler);
+    signal(SIGINT, signalHandler);
 
 
+	// Validate command line arguments
+    if (argc < 7) {
+        cout << "Usage: <-check> <hostname> <sysnr> <client> <username> <password> <sid>" << endl;
+        return EXIT_FAILURE;
+    }
 
+	try {
+        // Store command line arguments - adjust indices based on your new order
+        parameter = argv[0];
+		hostname_extern = argv[1];
+        sysnr_extern = argv[2];
+        client_nr_extern = argv[3];
+        username_extern = argv[4];
+        password_extern = argv[5];
+        sid_extern = argv[6];
+
+ 		// Convert parameters to SAP Unicode format using helper functions
+    		SAP_UC* username_sapuc = nullptr;
+    		unsigned username_sapuc_len = 0;
+    		if (!convertToSapUnicode(username_extern, &username_sapuc, username_sapuc_len, errorInfo)) {
+        		std::cout << "login_parameter_sapuc" << std::endl;
+        		std::cout << "RFC SDK Problem#" << errorInfo.code << "#" << std::endl;
+        		exit(EXIT_FAILURE);
+    		}
+
+			SAP_UC* password_sapuc = nullptr;
+    		unsigned password_sapuc_len = 0;
+    		if (!convertToSapUnicode(password_extern, &password_sapuc, password_sapuc_len, errorInfo)) {
+        		std::cout << "login_parameter_sapuc" << std::endl;
+        		std::cout << "RFC SDK Problem#" << errorInfo.code << "#" << std::endl;
+        		exit(EXIT_FAILURE);
+    		}
+			
+			SAP_UC* hostname_sapuc = nullptr;
+    		unsigned hostname_sapuc_len = 0;
+    		if (!convertToSapUnicode(hostname_extern, &hostname_sapuc, hostname_sapuc_len, errorInfo)) {
+        		std::cout << "login_parameter_sapuc" << std::endl;
+        		std::cout << "RFC SDK Problem#" << errorInfo.code << "#" << std::endl;
+        		exit(EXIT_FAILURE);
+    		}
+
+			SAP_UC* sid_sapuc = nullptr;
+    		unsigned sid_sapuc_len = 0;
+    		if (!convertToSapUnicode(sid_extern, &sid_sapuc, sid_sapuc_len, errorInfo)) {
+        		std::cout << "login_parameter_sapuc" << std::endl;
+        		std::cout << "RFC SDK Problem#" << errorInfo.code << "#" << std::endl;
+        		exit(EXIT_FAILURE);
+    		}
+
+			SAP_UC* sysnr_sapuc = nullptr;
+    		unsigned sysnr_sapuc_len = 0;
+    		if (!convertToSapUnicode(sysnr_extern, &sysnr_sapuc, sysnr_sapuc_len, errorInfo)) {
+        		std::cout << "login_parameter_sapuc" << std::endl;
+        		std::cout << "RFC SDK Problem#" << errorInfo.code << "#" << std::endl;
+        		exit(EXIT_FAILURE);
+    		}
+
+			SAP_UC* sysnr_sapuc = nullptr;
+    		unsigned sysnr_sapuc_len = 0;
+    		if (!convertToSapUnicode(sysnr_extern, &sysnr_sapuc, sysnr_sapuc_len, errorInfo)) {
+        		std::cout << "login_parameter_sapuc" << std::endl;
+        		std::cout << "RFC SDK Problem#" << errorInfo.code << "#" << std::endl;
+        		exit(EXIT_FAILURE);
+    		}
 
 		
 
-
+	
 		std::smatch reg_match;		
-		
-		
-		parameter = argv[1];
-		
 		
 		int wo_ist_show_parameter = - 1;
 		wo_ist_show_parameter = parameter.find("-show");
@@ -131,7 +191,7 @@ int main(int argc, char *argv[])
 		if (std::regex_search(parameter, reg_match, regex_1))
 		{
 			
-			cout<<"Alle verfügbaren CCMS Monitore"<<endl;
+			cout<<"All available CCMS monitors"<<endl;
 			
 			
 			#define NUM_PARAMS 9
@@ -139,8 +199,9 @@ int main(int argc, char *argv[])
 			unsigned resultLen = 0;
 			
 			
-			
-			
+
+
+			/*
 			
 			string username;
 			username = argv[2];
@@ -151,34 +212,21 @@ int main(int argc, char *argv[])
 			
 			
 			SAP_UC *username_sapuc = NULL;
-			unsigned username_sapuc_len;			
-			resultLen = 0;
+			unsigned username_sapuc_len = 0;
+			unsigned resultLen = 0;
 			rc = RfcUTF8ToSAPUC((RFC_BYTE*)username.c_str(),strlen(username.c_str()),username_sapuc, &username_sapuc_len, &resultLen,  &errorInfo);
 				
 				
-				
-				
-			if (rc == RFC_BUFFER_TOO_SMALL)
-			{
-				username_sapuc = (SAP_UC*)reallocU(username_sapuc, username_sapuc_len);
-				rc = RfcUTF8ToSAPUC((RFC_BYTE*)username.c_str(),strlen(username.c_str()),username_sapuc, &username_sapuc_len, &resultLen,  &errorInfo);
-					
-					
-					
-					
+			if (rc == RFC_BUFFER_TOO_SMALL) {
+    			// Allocate buffer with the required size
+    			username_sapuc = (SAP_UC*)mallocU(username_sapuc_len);
+    			if (username_sapuc == NULL) {
+       				fprintf(stderr, "Memory allocation failed for username_sapuc\n");
+        			exit(EXIT_FAILURE);
+    			}
+    			// Retry conversion
+    			rc = RfcUTF8ToSAPUC((RFC_BYTE*)username.c_str(), strlen(username.c_str()), username_sapuc, &username_sapuc_len, &resultLen, &errorInfo);
 			}
-			if (username_sapuc == NULL)
-			{
-				
-				username_sapuc = (SAP_UC*)reallocU(username_sapuc, username_sapuc_len);
-				rc = RfcUTF8ToSAPUC((RFC_BYTE*)username.c_str(),strlen(username.c_str()),username_sapuc, &username_sapuc_len, &resultLen,  &errorInfo);
-					
-					
-					
-					
-			}
-				
-			
 			
 			
 			string password;
@@ -407,7 +455,7 @@ int main(int argc, char *argv[])
 					
 					
 			}
-				
+			*/	
 			
 			
 			
@@ -426,9 +474,19 @@ int main(int argc, char *argv[])
 			loginParams[4].name = cU("SYSID");
 				
 			loginParams[4].value = sid_sapuc;
-			loginParams[5].name = cU("SYSNR");
-				
-			loginParams[5].value = sysnr_sapuc;
+			try {
+        			std::string formattedSysnr = formatSystemNumber(sysnr_extern);
+
+        			// Set up the connection parameters using the formatted SYSNR
+        			loginParams[5].name = cU("SYSNR");
+        			loginParams[5].value = cU(formattedSysnr.c_str());
+    			} catch (const std::runtime_error& e) {
+        			std::cout << "Login PROBLEM" << std::endl;
+        			std::cout << "Error formatting SYSNR: " << e.what() << std::endl;
+        			exit(EXIT_FAILURE);
+    			}
+			
+			
 			loginParams[6].name = cU("CLIENT");
 				
 			loginParams[6].value = client_nr_sapuc;
@@ -615,6 +673,12 @@ int main(int argc, char *argv[])
 			
 			RfcCloseConnection(conn, NULL);
 		}
+	} catch (const exception& e) {
+        cout << "Error: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
+
 		
 		
 		
@@ -4430,7 +4494,7 @@ int main(int argc, char *argv[])
 			
 			void rfc_ping();
 			rfc_ping();
-			
+			 
 			
 			
 			

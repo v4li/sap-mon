@@ -8,6 +8,7 @@
 #include <time.h>
 #include <errno.h>
 #include <signal.h>
+#include <sap_utils.h>
 #include "nwrfcsdk/include/sapnwrfc.h"
 #include "nwrfcsdk/include/sapucrfc.h"
 
@@ -34,7 +35,7 @@ extern string rueckgabe_nachricht;
 void rfc_ping()
 {
 
-
+	
 	
 
 
@@ -329,11 +330,21 @@ void rfc_ping()
 		
 	loginParams[3].value = hostname_sapuc;
 	loginParams[4].name = cU("SYSID");
-		
+	
 	loginParams[4].value = sid_sapuc;
-	loginParams[5].name = cU("SYSNR");
-		
-	loginParams[5].value = sysnr_sapuc;
+	
+	try {
+        std::string formattedSysnr = formatSystemNumber(sysnr_extern);
+
+        // Set up the connection parameters using the formatted SYSNR
+        loginParams[5].name = cU("SYSNR");
+        loginParams[5].value = cU(formattedSysnr.c_str());
+    } catch (const std::runtime_error& e) {
+        std::cout << "Login PROBLEM" << std::endl;
+        std::cout << "Error formatting SYSNR: " << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+	
 	loginParams[6].name = cU("CLIENT");
 		
 	loginParams[6].value = client_nr_sapuc;
@@ -343,12 +354,12 @@ void rfc_ping()
 	loginParams[8].value = cU("1");	
 	
 
-	
-	RFC_CONNECTION_HANDLE conn;
 		
-	conn = RfcOpenConnection(loginParams, NUM_PARAMS, &errorInfo);
-		
-		
+	RFC_CONNECTION_HANDLE conn = RfcOpenConnection(loginParams, NUM_PARAMS, &errorInfo);
+    if (errorInfo.code != RFC_OK) {
+        printSapRfcError(errorInfo);
+        exit(EXIT_FAILURE);
+    }	
 		
 		
 
@@ -572,9 +583,16 @@ void rfc_ping()
 
 	
 	rueckgabe_nachricht = error_message_string;
+	
 
-		
 	RfcDestroyFunction(rfc_handle, &errorInfo);
-	RfcCloseConnection(conn, NULL);
+
+	RfcCloseConnection(conn, &errorInfo);	
+	RfcDestroyConnection(conn, &errorInfo);
+
+	return EXIT_SUCCESS;
+	
+
+
 		
 }
